@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    style="@style/background"
+    android:layout_height="match_parent" >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MANGA NETWORK"
+        android:id="@+id/titleapp"
+        android:textSize="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_login"
+        android:hint="Nom du compte"
+        android:layout_above="@+id/et_password"
+        android:layout_alignStart="@+id/titleapp"
+        android:layout_marginBottom="67dp"
+        android:layout_alignEnd="@+id/titleapp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_password"
+        android:hint="Mot de passe"
+        android:inputType="textPassword"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/et_login"
+        android:layout_alignEnd="@+id/et_login" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Se connecter"
+        android:id="@+id/bt_connexion"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="101dp"
+        android:layout_alignEnd="@+id/et_password"
+        android:layout_alignStart="@+id/et_password" />
+</RelativeLayout>
