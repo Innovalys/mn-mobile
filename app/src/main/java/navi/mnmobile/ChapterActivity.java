@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -21,31 +22,50 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import navi.mnmobile.navi.mnmobile.adapter.ChapterAdapter;
 import navi.mnmobile.navi.mnmobile.adapter.MangaAdapter;
+import navi.mnmobile.navi.mnmobile.businesslayer.Chapter;
 import navi.mnmobile.navi.mnmobile.businesslayer.Manga;
+import navi.mnmobile.navi.mnmobile.businesslayer.Page;
 import navi.mnmobile.navi.mnmobile.businesslayer.User;
 
 
-public class DashboardActivity extends Activity {
-    ListView listManga;
-    User usr;
-    List<Manga> userMangaList = new ArrayList<Manga>();
+public class ChapterActivity extends Activity {
+
+    private User usr;
+    private Manga manga;
+    private Chapter chapter;
+
+    private int chapter_id;
+    private ListView listImages;
+    private TextView chapterTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.activity_chapter);
+
         usr = getIntent().getExtras().getParcelable("user");
+        manga = getIntent().getExtras().getParcelable("manga");
+        chapter_id = getIntent().getExtras().getInt("chapter_id");
 
-        listManga = (ListView) findViewById(R.id.lv_manga_list);
-
-        // Launch download of manga info
-        HTTPGetMangas gm = new HTTPGetMangas();
-        gm.execute();
+        chapterTitle = (TextView) findViewById(R.id.tv_chapter_title);
+        listImages = (ListView) findViewById(R.id.lv_chapter_pages);
 
     }
 
-    public class HTTPGetMangas extends AsyncTask<Void, Void, Void> {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        chapterTitle.setText(manga.getName() + " - " + manga.getChapters().get(chapter_id));
+
+        // Launch download of manga info
+        HTTPGetChapters gc = new HTTPGetChapters();
+        gc.execute();
+    }
+
+    public class HTTPGetChapters extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -55,14 +75,19 @@ public class DashboardActivity extends Activity {
         private String getResponseText(String header, String url, int port, String URI, String credentials) throws IOException {
             StringBuilder response = new StringBuilder();
             URL _url = new URL(header, url, port, URI);
+
             HttpURLConnection httpconn = (HttpURLConnection) _url.openConnection();
             httpconn.setRequestProperty("Authorization", credentials);
+
             if (httpconn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
                 BufferedReader input = new BufferedReader(new InputStreamReader(httpconn.getInputStream()), 8192);
                 String strLine = null;
+
                 while ((strLine = input.readLine()) != null) {
                     response.append(strLine);
                 }
+
                 input.close();
             }
             return response.toString();
@@ -72,28 +97,21 @@ public class DashboardActivity extends Activity {
         protected Void doInBackground(Void... arg0) {
             try {
                 // CONNEXION
-                String JSONUser = getResponseText("http", "server.vuzi.fr", 200, "/mn-server/user/mangas/"+usr.getID(), "Basic " + usr.getPassword());
+                String uri = "/mn-server/user/manga/id/" + manga.getId() + "/" + chapter_id;
+                String JSONUser = getResponseText("http", "server.vuzi.fr", 200, "/mn-server/user/manga/id/" + manga.getId() + "/" + (chapter_id + 1), "Basic " + usr.getPassword());
                 JSONObject jsonObject = new JSONObject(JSONUser);
                 if (jsonObject.optString("code").equals("200")) {
-                    JSONArray aData = new JSONArray(jsonObject.optString("data"));
-                    for (int i=0; i<aData.length(); i++) {
-                        JSONObject actor = aData.getJSONObject(i);
 
-                        // Name and cover
-                        String id = actor.getString("id");
-                        String name = actor.getString("title");
-                        String cover = actor.getString("cover");
+                    JSONObject jsonChapter = jsonObject.getJSONObject("data");
+                    JSONArray pages = jsonChapter.getJSONArray("pages");
 
-                        // Chapters
-                        JSONArray jsonChapters = actor.getJSONArray("chapters");
-                        List<String> chapters = new ArrayList<String>();
+                    chapter = new Chapter(jsonChapter.optString("title"), new ArrayList<Page>());
 
-                        for(int j = 0; j < jsonChapters.length(); j++) {
-                            JSONObject chapter = jsonChapters.getJSONObject(j);
-                            chapters.add(chapter.getString("title").toString());
-                        }
+                    for (int i = 0; i < pages.length(); i++) {
+                        JSONObject jsonPage = pages.getJSONObject(i);
 
-                        userMangaList.add(new Manga(id, name, chapters, null, null, cover));
+                        // Link & page number
+                        chapter.getPages().add(new Page(jsonPage.optString("link"), i));
                     }
                 } else if (jsonObject.optString("code").equals("403")) {
                     Toast.makeText(getApplicationContext(), "Nom de compte et/ou mot de passe n'existe pas !", Toast.LENGTH_SHORT).show();
@@ -112,19 +130,8 @@ public class DashboardActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
 
-            findViewById(R.id.loader).setVisibility(View.GONE);
-
-            final MangaAdapter mangaAdapter = new MangaAdapter(userMangaList, getLayoutInflater());
-            listManga.setAdapter(mangaAdapter);
-            listManga.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent myIntent = new Intent(DashboardActivity.this, MangaViewActivity.class);
-                    myIntent.putExtra("user", usr);
-                    myIntent.putExtra("manga", (Manga) mangaAdapter.getItem(position));
-                    startActivity(myIntent);
-                }
-            });
+            final ChapterAdapter chapterAdapter = new ChapterAdapter(chapter, getLayoutInflater());
+            listImages.setAdapter(chapterAdapter);
 
         }
     }

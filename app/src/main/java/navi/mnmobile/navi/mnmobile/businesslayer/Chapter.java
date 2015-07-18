@@ -9,12 +9,26 @@ import java.util.List;
  */
 public class Chapter {
     private String title;
-    private List<Image> pictures;
-    public Chapter(){
+    private List<Page> pages;
 
+    public Chapter(String title, List<Page> pages){
+        this.title = title;
+        this.pages = pages;
     }
-    public Chapter(String _title,List<Image> _pictures){
-        title = _title;
-        pictures = _pictures;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<Page> getPages() {
+        return pages;
+    }
+
+    public void setPages(List<Page> pages) {
+        this.pages = pages;
     }
 }

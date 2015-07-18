@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by Navi on 14/07/2015.
  */
-public class User implements Parcelable{
+public class User implements Parcelable {
     private String id;
     private String name;
     private String password;

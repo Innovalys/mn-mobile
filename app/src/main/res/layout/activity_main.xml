@@ -11,28 +11,30 @@
         android:layout_height="wrap_content"
         android:text="MANGA NETWORK"
         android:id="@+id/titleapp"
-        android:textSize="25dp"
-        android:layout_alignParentTop="true"
+        android:textSize="50dp"
+        android:layout_above="@+id/et_login"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp" />
+        android:layout_marginBottom="76dp" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/et_login"
         android:hint="Nom du compte"
+        android:singleLine="true"
         android:layout_above="@+id/et_password"
-        android:layout_alignStart="@+id/titleapp"
-        android:layout_marginBottom="67dp"
-        android:layout_alignEnd="@+id/titleapp" />
+        android:layout_alignEnd="@+id/titleapp"
+        android:layout_alignStart="@+id/titleapp" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/et_password"
         android:hint="Mot de passe"
+        android:singleLine="true"
         android:inputType="textPassword"
-        android:layout_centerVertical="true"
+        android:layout_above="@+id/bt_connexion"
+        android:layout_marginBottom="60dp"
         android:layout_alignStart="@+id/et_login"
         android:layout_alignEnd="@+id/et_login" />
 

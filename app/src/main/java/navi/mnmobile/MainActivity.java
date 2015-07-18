@@ -3,6 +3,7 @@ package navi.mnmobile;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.nfc.Tag;
@@ -47,6 +48,10 @@ public class MainActivity extends Activity {
         et_login = (EditText) findViewById(R.id.et_login);
         et_password = (EditText) findViewById(R.id.et_password);
         bt_connect = (Button) findViewById(R.id.bt_connexion);
+
+        TextView text = (TextView) findViewById(R.id.titleapp);
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/MfKazincbarcika.ttf");
+        text.setTypeface(tf);
 
         // Event Onclick Connection
         bt_connect.setOnClickListener(new View.OnClickListener() {
